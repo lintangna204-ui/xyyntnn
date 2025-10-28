@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Menu Utama AI Kuis Logika</title>
+  <style>
+    body {
+      background: radial-gradient(circle, #001f3f, #003366, #006699);
+      color: white;
+      font-family: "Poppins", sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    h1 {
+      color: #00ffff;
+      text-shadow: 0 0 20px #00ffff;
+      margin-bottom: 30px;
+    }
+
+    .menu-box {
+      background: rgba(255,255,255,0.1);
+      border: 2px solid #00ffff;
+      border-radius: 15px;
+      padding: 30px;
+      text-align: center;
+      box-shadow: 0 0 25px #00ffff80;
+      width: 320px;
+    }
+
+    button {
+      background-color: #00ffff;
+      border: none;
+      color: black;
+      font-weight: bold;
+      padding: 12px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin: 10px;
+      transition: 0.3s;
+      width: 80%;
+    }
+
+    button:hover {
+      background-color: #33ffff;
+      transform: scale(1.05);
+    }
+
+    .credit {
+      margin-top: 40px;
+      font-size: 12px;
+      color: #ccc;
+      text-shadow: 0 0 5px #00ffff;
+    }
+  </style>
+</head>
+<body>
+  <h1>🧠 AI Kuis Logika</h1>
+
+  <div class="menu-box">
+    <p>Pilih mode permainan:</p>
+    <button onclick="mulaiLogika()">🧩 Kuis Tebak-Tebakan Logika</button>
+    <button onclick="keluar()">🚪 Keluar</button>
+  </div>
+
+  <div class="credit">© 2025 AI Logika by Lintang Nur Anggraeni</div>
+
+  <script>
+    function mulaiLogika() {
+      window.location.href = "kuis.html"; // menuju ke halaman kuis logika
+    }
+
+    function keluar() {
+      alert("Terima kasih sudah bermain! 👋");
+    }
+
+  </script>
+</body>
+</html>

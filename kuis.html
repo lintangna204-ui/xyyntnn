@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>AI Kuis Tebak-Tebakan Logika</title>
+  <style>
+    body {
+      background: radial-gradient(circle, #001f3f, #003366, #006699);
+      color: white;
+      font-family: "Poppins", sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    h2 {
+      color: #00ffff;
+      text-shadow: 0 0 15px #00ffff;
+      margin-bottom: 10px;
+    }
+    #quizBox {
+      width: 210px;
+      height: 140px;
+      border: 2px solid #00ffff;
+      border-radius: 10px;
+      padding: 15px;
+      background: rgba(255,255,255,0.1);
+      text-align: left;
+      box-shadow: 0 0 15px #00ffff80;
+      overflow-y: auto;
+    }
+    input {
+      width: 300px;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      margin-top: 10px;
+    }
+    button {
+      padding: 10px 15px;
+      margin-top: 10px;
+      border: none;
+      background-color: #00ffff;
+      color: #000;
+      font-weight: bold;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background-color: #33ffff;
+    }
+    #result {
+      margin-top: 10px;
+      font-weight: bold;
+      color: #ffcc00;
+    }
+
+    #backBtn {
+      background-color: #ff4d4d;
+      color: white;
+      margin-top: 15px;
+    }
+
+    #backBtn:hover {
+      background-color: #ff6666;
+    }
+
+  </style>
+</head>
+<body>
+  <h2>🧩 AI Kuis Tebak-Tebakan Logika</h2>
+  <div id="quizBox">
+
+    <p id="question">Klik "Mulai" untuk memulai permainan logika!</p>
+  </div>
+  <input id="answerInput" type="text" placeholder="Ketik jawaban kamu..." disabled>
+  <button id="submitBtn" onclick="cekJawaban()" disabled>Kirim Jawaban</button>
+  <button id="startBtn" onclick="mulaiKuis()">Mulai</button>
+  <p id="result"></p>
+
+  <button id="backBtn" onclick="kembali()">⬅ Kembali ke Menu</button>
+
+
+  <script>
+    // Daftar pertanyaan logika dan jawabannya
+    const pertanyaan = [
+         { q: "Ada 5 burung di pohon. Ditembak 1, berapa sisa burung di pohon?", a: "0", e: "Burung lain terbang karena kaget, jadi tidak ada yang tersisa di pohon." },
+         { q: "Mana yang lebih berat, 1 kg kapas atau 1 kg besi?", a: "sama", e: "Keduanya sama-sama 1 kg, jadi beratnya sama." },
+         { q: "Ayam atau telur duluan?", a: "ayam", e: "Ayam diciptakan lebih dulu untuk bertelur, menurut logika penciptaan." },
+         { q: "Jam yang berhenti masih berguna nggak?", a: "ya", e: "Jam yang rusak masih menunjukkan waktu yang benar dua kali sehari." },
+         { q: "Tangga bisa naik dan turun tapi tidak bergerak. Apa itu?", a: "tangga", e: "Tangga tidak bergerak tapi fungsinya untuk naik dan turun." },
+         { q: "Kalau listrik mati, apa yang jadi terang?", a: "lilin", e: "Lilin dinyalakan ketika listrik mati agar terang." },
+         { q: "Bayangan selalu mengikuti tapi tidak pernah mendahului. Apa itu?", a: "bayangan", e: "Bayangan memang selalu mengikuti arah cahaya." },
+         { q: "Apa yang bisa dilihat tapi tak bisa dipegang?", a: "bayangan", e: "Bayangan terlihat tapi tak memiliki bentuk fisik." },
+         { q: "Mobil merah berhenti di lampu hijau. Apa yang salah?", a: "lampu", e: "Lampu hijau artinya jalan, jadi salah kalau berhenti." },
+         { q: "Kalau kamu punya aku, kamu ingin berbagi. Tapi kalau kamu berbagi, aku hilang. Siapa aku?", a: "rahasia", e: "Kalau rahasia dibagi, maka bukan rahasia lagi." },
+         { q: "Apa yang selalu datang tapi tidak pernah tiba?", a: "besok", e: "Karena setiap kali 'besok' datang, namanya sudah 'hari ini'." },
+         { q: "Apa yang bisa kamu pecahkan tanpa menyentuhnya?", a: "janji", e: "Janji bisa diingkari tanpa menyentuh apapun." },
+         { q: "Apa yang memiliki banyak gigi tapi tidak bisa menggigit?", a: "sisir", e: "Sisir punya gigi tapi tidak bisa menggigit." },
+         { q: "Apa yang punya tangan tapi tidak bisa bertepuk?", a: "jam", e: "Jam memiliki jarum berbentuk tangan." },
+         { q: "Kalau kamu lempar bola sekuat mungkin, bagaimana bola bisa kembali ke kamu?", a: "pantul", e: "Kalau dilempar ke dinding atau ke atas, bola memantul kembali." },
+         { q: "Apa yang basah ketika mengeringkan sesuatu?", a: "handuk", e: "Handuk menyerap air dari tubuh sehingga jadi basah." },
+         { q: "Apa yang bisa berjalan tapi tidak punya kaki?", a: "jam", e: "Jarum jam 'berjalan' tapi tidak punya kaki." },
+         { q: "Kamu ambil dari saya, tapi saya malah membesar. Apa saya?", a: "lubang", e: "Lubang semakin besar saat kamu ambil tanahnya." },
+         { q: "Apa yang naik tapi tidak pernah turun?", a: "umur", e: "Umur hanya bertambah, tidak pernah berkurang." },
+         { q: "Apa yang punya kepala dan ekor tapi tidak punya badan?", a: "koin", e: "Koin punya sisi kepala dan ekor." },
+         { q: "Apa yang berlari tapi tidak punya kaki?", a: "air", e: "Air sungai mengalir, seperti 'berlari' tanpa kaki." },
+         { q: "Apa yang selalu di depan kamu tapi tidak bisa kamu lihat?", a: "masa depan", e: "Masa depan belum terjadi jadi tidak bisa dilihat." },
+         { q: "Apa yang punya leher tapi tidak punya kepala?", a: "botol", e: "Botol punya leher tapi tidak punya kepala." },
+         { q: "Apa yang selalu bertambah tapi tidak pernah berkurang?", a: "umur", e: "Umur hanya bertambah setiap waktu." },
+         { q: "Apa yang tidak punya sayap tapi bisa terbang?", a: "waktu", e: "Ungkapan 'waktu terbang' artinya waktu cepat berlalu." },
+         { q: "Apa yang punya kota tapi tidak punya rumah?", a: "peta", e: "Peta punya nama kota tapi tidak rumah fisik." },
+         { q: "Apa yang punya kunci tapi tidak bisa membuka?", a: "piano", e: "Piano punya tuts (keys), bukan kunci pintu." },
+         { q: "Apa yang bisa kamu tangkap tapi tidak kamu lempar?", a: "flu", e: "Kamu bisa 'tertangkap flu', bukan melemparnya." },
+         { q: "Apa yang berwarna hitam ketika bersih dan putih ketika kotor?", a: "papan tulis", e: "Papan tulis hitam jadi putih karena kapur." },
+         { q: "Apa yang punya banyak jarum tapi tidak bisa menjahit?", a: "kaktus", e: "Kaktus punya duri seperti jarum tapi tidak menjahit." },
+         { q: "Apa yang selalu di tempat tidur tapi tidak pernah tidur?", a: "bantal", e: "Bantal selalu di tempat tidur tapi tidak bisa tidur." },
+         { q: "Apa yang punya banyak mata tapi tidak bisa melihat?", a: "kentang", e: "Kentang punya 'mata' tapi bukan untuk melihat." },
+         { q: "Apa yang bisa menembus kaca tanpa memecahkannya?", a: "cahaya", e: "Cahaya bisa melewati kaca transparan." },
+         { q: "Apa yang selalu ada di tengah malam?", a: "huruf a", e: "Kata 'malam' punya huruf A di tengahnya." },
+         { q: "Apa yang semakin diambil semakin besar?", a: "lubang", e: "Lubang makin besar kalau tanahnya diambil." },
+         { q: "Apa yang bisa kamu dengar tapi tidak bisa kamu lihat atau sentuh?", a: "suara", e: "Suara hanya bisa didengar." },
+         { q: "Apa yang punya kaki empat tapi tidak bisa berjalan?", a: "meja", e: "Meja punya empat kaki tapi diam di tempat." },
+         { q: "Apa yang punya wajah dan dua tangan tapi tidak punya kaki?", a: "jam", e: "Jam punya 'wajah' dan 'tangan' jarum." },
+         { q: "Apa yang punya telinga tapi tidak bisa mendengar?", a: "panci", e: "Panci punya 'telinga' pegangan tapi tidak bisa mendengar." },
+         { q: "Apa yang bisa menulis tapi tidak bisa membaca?", a: "pensil", e: "Pensil menulis tapi tidak bisa membaca tulisannya." },
+         { q: "Apa yang tidak bisa dibakar tapi bisa meleleh?", a: "es", e: "Es meleleh kalau dipanaskan, tidak terbakar." },
+         { q: "Apa yang hidup jika diberi makan tapi mati jika diberi minum?", a: "api", e: "Api menyala dengan bahan bakar tapi padam dengan air." },
+         { q: "Apa yang datang sekali dalam satu menit, dua kali dalam satu momen, tapi tidak pernah dalam seribu tahun?", a: "huruf m", e: "Huruf 'M' muncul sesuai kata itu." },
+         { q: "Apa yang punya jantung tapi tidak berdetak?", a: "sayur", e: "Sayur seperti jantung pisang tidak berdetak." },
+         { q: "Apa yang punya lidah tapi tidak bisa bicara?", a: "sepatu", e: "Sepatu punya 'lidah' bagian atas tapi tidak bicara." },
+         { q: "Apa yang selalu mengejar tapi tidak pernah menangkap?", a: "bayangan", e: "Bayangan selalu mengikuti sumbernya." },
+         { q: "Apa yang tidak bisa kamu sentuh walau selalu di dekatmu?", a: "udara", e: "Udara ada di sekitar tapi tak bisa dipegang." },
+         { q: "Apa yang berputar tapi tidak berpindah tempat?", a: "kipas", e: "Kipas berputar di porosnya." },
+         { q: "Apa yang punya daun tapi bukan pohon?", a: "buku", e: "Lembar buku disebut 'daun buku'." },
+         { q: "Apa yang bisa membawa banyak orang tapi tidak bergerak?", a: "foto", e: "Foto menampilkan orang, tapi diam." },
+         { q: "Apa yang keluar saat hujan tapi hilang saat matahari?", a: "pelangi", e: "Pelangi muncul setelah hujan, hilang saat cerah." }
+        ];
+
+    let index = 0;
+    let skor = 0;
+
+    function mulaiKuis() {
+      index = 0;
+      skor = 0;
+
+      document.getElementById("startBtn").disabled = true;
+      document.getElementById("answerInput").disabled = false;
+      document.getElementById("submitBtn").disabled = false;
+      document.getElementById("result").innerHTML = "";
+      tampilPertanyaan();
+    }
+
+    function tampilPertanyaan() {
+      document.getElementById("question").innerText = pertanyaan[index].q;
+      document.getElementById("answerInput").value = "";
+    }
+
+    function cekJawaban() {
+      let jawaban = document.getElementById("answerInput").value.toLowerCase().trim();
+      let benar = pertanyaan[index].a.toLowerCase();
+
+      if (jawaban === benar) {
+        document.getElementById("result").innerHTML = "✅ Benar!" + pertanyaan[index].e;
+        skor++;
+
+      } else {
+        document.getElementById("result").innerHTML = "❌ Salah! Jawaban yang benar:" + pertanyaan[index].a.toLowerCase();
+      }
+
+      index++;
+
+      // Jika masih ada pertanyaan
+      if (index < pertanyaan.length) {
+        setTimeout(() => {
+          tampilPertanyaan();
+          document.getElementById("result").innerHTML = "";
+        }, 1500);
+      } else {
+        setTimeout(() => {
+          selesaiKuis();
+        }, 1500);
+      }
+    }
+
+    function selesaiKuis() {
+      document.getElementById("question").innerHTML = `
+        🎉 Kuis selesai!<br>
+        Skor akhir kamu: <b>${skor}</b> dari ${pertanyaan.length}
+      `;
+      document.getElementById("result").innerHTML = "";
+      document.getElementById("startBtn").disabled = false;
+      document.getElementById("answerInput").disabled = true;
+      document.getElementById("submitBtn").disabled = true;
+    }
+
+    function kembali() {
+      window.location.href = "menu.html";
+    }
+  </script>
+</body>
+</html>
